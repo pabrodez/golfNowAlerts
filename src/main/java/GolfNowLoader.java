@@ -9,6 +9,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class GolfNowLoader {
 
@@ -28,15 +29,15 @@ public class GolfNowLoader {
     courseId.put("ashton-on-mersey", "10210-ashton-on-mersey-golf-club");
   }
 
-  public static String getPageFromUrl(String url) {
+  public static String getPageFromUrl(String url) throws InterruptedException{
     String htmlStr;
     try {
       driver.get(url);
-      driver.manage().deleteAllCookies();
       driver.findElement(By.cssSelector("#onetrust-accept-btn-handler")).click();
+      Thread.sleep(5000); // sleep while page loads
       htmlStr = driver.getPageSource();
     } finally {
-//      driver.quit();
+      driver.quit();
     }
     return htmlStr;
   }
