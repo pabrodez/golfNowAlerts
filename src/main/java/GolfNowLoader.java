@@ -1,14 +1,17 @@
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class GolfNowLoader {
 
-  private WebDriver driver;
+  private static WebDriver driver;
   private static final Map<String, String> courseId;
   private static final String BASE_URL = "https://www.golfnow.co.uk/tee-times/facility/";
   private static final String SEARCH_PARAM = "/search#date=";
@@ -16,6 +19,10 @@ public class GolfNowLoader {
 
   static {
     courseId = new HashMap<>();
+    // System.setProperty("webdriver.gecko.driver", "C:/Users/Pablo/Downloads/geckodriver.exe");
+    System.setProperty("webdriver.gecko.driver", "/home/pabrodez/Downloads/geckodriver");
+    FirefoxDriver ffdriver = new FirefoxDriver();
+    driver = ffdriver;
     courseId.put("chorlton", "12354-chorlton-cum-hardy-golf-club");
     courseId.put("flixton", "15764-flixton-golf-club");
     courseId.put("davyhulme", "13949-davyhulme-park-golf-club");
@@ -23,7 +30,7 @@ public class GolfNowLoader {
     courseId.put("ashton-on-mersey", "10210-ashton-on-mersey-golf-club");
   }
 
-  public String getPageFromUrl(String url) throws InterruptedException {
+  public static String getHtmlFromUrl(String url) throws InterruptedException {
     String htmlStr;
     driver.get(url);
     List<WebElement> buttonToClick = driver.findElements(By.cssSelector("#onetrust-accept-btn-handler"));
@@ -36,13 +43,29 @@ public class GolfNowLoader {
     return htmlStr;
   }
 
-  public static String buildCourseDayUrl(String course, String date) {
-    // assumes date is format mm+dd+yyyy
-    return BASE_URL + courseId.get(course) + SEARCH_PARAM + date + HOTDEAL_PARAM;
+  public static List<String> getHtml30daysDealsCourse(String course, String fromDate) throws InterruptedException {
+    LocalDate startDate = LocalDate.parse(fromDate);
+    List<String> dayDealsHtmlList = new ArrayList<>();
+    String nextDay = startDate.format(DateTimeFormatter.ofPattern("MMM+d+uuuu"));
+    String dayUrl = buildCourseDayUrl(course, nextDay);
+    driver.get(dayUrl);
+    List<WebElement> buttonToClick = driver.findElements(By.id("onetrust-accept-btn-handler"));
+    if (!buttonToClick.isEmpty()) {
+      buttonToClick.get(0).click();
+    }
+    Thread.sleep(7000);
+    for (int i = 0; i <= 30; i++) {
+      Thread.sleep(2000);
+      dayDealsHtmlList.add(driver.getPageSource());
+      WebElement nextDayButton = driver.findElement(By.cssSelector("#nextDay div"));
+      nextDayButton.click();
+    }
+    return dayDealsHtmlList;
   }
 
-  public void setWebDriver(WebDriver driver) {
-    this.driver = driver;
+  public static String buildCourseDayUrl(String course, String date) {
+    // assumes date is format Sep+08+2020
+    return BASE_URL + courseId.get(course) + SEARCH_PARAM + date + HOTDEAL_PARAM;
   }
 
   public static Map<String, String> getCourseId() {
