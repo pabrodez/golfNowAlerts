@@ -43,11 +43,10 @@ public class GolfNowLoader {
     return htmlStr;
   }
 
-  public static Map<String, HashMap<String, String>> getHtml30daysDealsCourse(String course, String fromDate) throws InterruptedException {
-    LocalDate startDate = LocalDate.parse(fromDate);
-    Map<String, HashMap<String, String>> dayTimePrice = new HashMap<>();
-    String nextDay = startDate.format(DateTimeFormatter.ofPattern("MMM+d+uuuu"));
-    String dayUrl = buildCourseDayUrl(course, nextDay);
+  public static Map<String, String> getHtml30daysDealsCourse(String course, String fromDate) throws InterruptedException {
+    String startDate = LocalDate.parse(fromDate).format(DateTimeFormatter.ofPattern("MMM+d+uuuu"));
+    Map<String, String> dayHtml = new HashMap<>();
+    String dayUrl = buildCourseDayUrl(course, startDate);
     driver.get(dayUrl);
     List<WebElement> buttonToClick = driver.findElements(By.id("onetrust-accept-btn-handler"));
     if (!buttonToClick.isEmpty()) {
@@ -56,11 +55,11 @@ public class GolfNowLoader {
     Thread.sleep(7000);
     for (int i = 0; i <= 30; i++) {
       Thread.sleep(2000);
-      dayDealsHtmlList.add(driver.getPageSource());
+      dayHtml.put(startDate, driver.getPageSource());
       WebElement nextDayButton = driver.findElement(By.cssSelector("#nextDay div"));
       nextDayButton.click();
     }
-    return dayDealsHtmlList;
+    return dayHtml;
   }
 
   public static String buildCourseDayUrl(String course, String date) {

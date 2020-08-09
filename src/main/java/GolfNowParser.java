@@ -4,6 +4,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GolfNowParser {
@@ -20,6 +21,22 @@ public class GolfNowParser {
         }
 
         return timePrice;
+    }
+
+    public static String parseAllCourses30dayDeals(String startDate) throws InterruptedException {
+        Map<String, Map<String, List<String>>> dayTimePriceCourse = new HashMap<>();
+
+        GolfNowLoader.getCourseId().keySet().forEach(course -> {
+            try {
+               Map<String, String> dayHtml = GolfNowLoader.getHtml30daysDealsCourse(course, startDate);
+                dayHtml.forEach((key, value) -> {
+                    Map<String, String> timePrice = getHotDealsTimePrice(value);
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
     }
 
 
