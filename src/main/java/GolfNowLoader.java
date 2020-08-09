@@ -19,11 +19,11 @@ public class GolfNowLoader {
 
   static {
     courseId = new HashMap<>();
-    // System.setProperty("webdriver.gecko.driver", "C:/Users/Pablo/Downloads/geckodriver.exe");
-    System.setProperty("webdriver.gecko.driver", "/home/pabrodez/Downloads/geckodriver");
+    System.setProperty("webdriver.gecko.driver", "C:/Users/Pablo/Downloads/geckodriver.exe");
+//    System.setProperty("webdriver.gecko.driver", "/home/pabrodez/Downloads/geckodriver");
     FirefoxDriver ffdriver = new FirefoxDriver();
     driver = ffdriver;
-    courseId.put("chorlton", "12354-chorlton-cum-hardy-golf-club");
+    courseId.put("chorlton", "12354-chorlton-cum-ha rdy-golf-club");
     courseId.put("flixton", "15764-flixton-golf-club");
     courseId.put("davyhulme", "13949-davyhulme-park-golf-club");
     courseId.put("ellesmere", "11383-ellesmere-golf-club");
@@ -43,9 +43,9 @@ public class GolfNowLoader {
     return htmlStr;
   }
 
-  public static List<String> getHtml30daysDealsCourse(String course, String fromDate) throws InterruptedException {
+  public static Map<String, HashMap<String, String>> getHtml30daysDealsCourse(String course, String fromDate) throws InterruptedException {
     LocalDate startDate = LocalDate.parse(fromDate);
-    List<String> dayDealsHtmlList = new ArrayList<>();
+    Map<String, HashMap<String, String>> dayTimePrice = new HashMap<>();
     String nextDay = startDate.format(DateTimeFormatter.ofPattern("MMM+d+uuuu"));
     String dayUrl = buildCourseDayUrl(course, nextDay);
     driver.get(dayUrl);
