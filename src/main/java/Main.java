@@ -13,10 +13,10 @@ public class Main {
     // no earlier than 30 days in advance, so the Task is run daily
     // to search reduced green fees in 30 days from date of execution
     // Issue is that new tee times are added to days before then
-      List<String> dealsList =  GolfNowLoader.getHtml30daysDealsCourse("chorlton", LocalDate.now().toString());
-      for (String html : dealsList) {
-          System.out.println(GolfNowParser.getHotDealsTimePrice(html).toString());
-      }
+      System.setProperty(BuildVars.DRIVER_NAME, BuildVars.DRIVER_URL);
+      System.out.println(
+              GolfNowParser.parseAllCourses30dayDeals(LocalDate.now().toString())
+      );
 
 //    LocalDate currentDatePlus30 = LocalDate.now().plusDays(30);
 //    String formatDate = currentDatePlus30.format(DateTimeFormatter.ofPattern("MMM+d+uuuu"));

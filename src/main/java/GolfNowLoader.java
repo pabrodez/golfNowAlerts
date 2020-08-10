@@ -12,22 +12,13 @@ import java.util.Map;
 public class GolfNowLoader {
 
   private static WebDriver driver;
-  private static final Map<String, String> courseId;
   private static final String BASE_URL = "https://www.golfnow.co.uk/tee-times/facility/";
   private static final String SEARCH_PARAM = "/search#date=";
   private static final String HOTDEAL_PARAM = "&hotdealsonly=true";
 
   static {
-    courseId = new HashMap<>();
-    System.setProperty("webdriver.gecko.driver", "C:/Users/Pablo/Downloads/geckodriver.exe");
-//    System.setProperty("webdriver.gecko.driver", "/home/pabrodez/Downloads/geckodriver");
-    FirefoxDriver ffdriver = new FirefoxDriver();
-    driver = ffdriver;
-    courseId.put("chorlton", "12354-chorlton-cum-ha rdy-golf-club");
-    courseId.put("flixton", "15764-flixton-golf-club");
-    courseId.put("davyhulme", "13949-davyhulme-park-golf-club");
-    courseId.put("ellesmere", "11383-ellesmere-golf-club");
-    courseId.put("ashton-on-mersey", "10210-ashton-on-mersey-golf-club");
+    driver = new FirefoxDriver();
+
   }
 
   public static String getHtmlFromUrl(String url) throws InterruptedException {
@@ -44,9 +35,9 @@ public class GolfNowLoader {
   }
 
   public static Map<String, String> getHtml30daysDealsCourse(String course, String fromDate) throws InterruptedException {
-    String startDate = LocalDate.parse(fromDate).format(DateTimeFormatter.ofPattern("MMM+d+uuuu"));
+    LocalDate startDate = LocalDate.parse(fromDate);
     Map<String, String> dayHtml = new HashMap<>();
-    String dayUrl = buildCourseDayUrl(course, startDate);
+    String dayUrl = buildCourseDayUrl(course, startDate.format(DateTimeFormatter.ofPattern("MMM+d+uuuu")));
     driver.get(dayUrl);
     List<WebElement> buttonToClick = driver.findElements(By.id("onetrust-accept-btn-handler"));
     if (!buttonToClick.isEmpty()) {
@@ -55,7 +46,7 @@ public class GolfNowLoader {
     Thread.sleep(7000);
     for (int i = 0; i <= 30; i++) {
       Thread.sleep(2000);
-      dayHtml.put(startDate, driver.getPageSource());
+      dayHtml.put(startDate.plusDays(i).toString(), driver.getPageSource());
       WebElement nextDayButton = driver.findElement(By.cssSelector("#nextDay div"));
       nextDayButton.click();
     }
@@ -64,11 +55,11 @@ public class GolfNowLoader {
 
   public static String buildCourseDayUrl(String course, String date) {
     // assumes date is format Sep+08+2020
-    return BASE_URL + courseId.get(course) + SEARCH_PARAM + date + HOTDEAL_PARAM;
+    return BASE_URL + BuildVars.COURSES.get(course) + SEARCH_PARAM + date + HOTDEAL_PARAM;
   }
 
   public static Map<String, String> getCourseId() {
-    return courseId;
+    return BuildVars.COURSES;
   }
 
 }
