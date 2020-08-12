@@ -4,10 +4,7 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GolfNowLoader {
 
@@ -36,7 +33,7 @@ public class GolfNowLoader {
 
   public static Map<String, String> getHtml30daysDealsCourse(String course, String fromDate) throws InterruptedException {
     LocalDate startDate = LocalDate.parse(fromDate);
-    Map<String, String> dayHtml = new HashMap<>();
+    Map<String, String> dayHtml = new LinkedHashMap<>();
     String dayUrl = buildCourseDayUrl(course, startDate.format(DateTimeFormatter.ofPattern("MMM+d+uuuu")));
     driver.get(dayUrl);
     List<WebElement> buttonToClick = driver.findElements(By.id("onetrust-accept-btn-handler"));

@@ -3,10 +3,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GolfNowParser {
 
@@ -24,11 +21,11 @@ public class GolfNowParser {
         return timePrice;
     }
 
-    public static Map<String, List<Map<String, String>>> parseAllCourses30dayDeals(String startDate) throws InterruptedException {
-        Map<String, List<Map<String, String>>> dayTimePrice = new HashMap<>();
+    public static Map<String, List<Map<String, String>>> parseAllCourses30dayDeals(String startDate) {
+        Map<String, List<Map<String, String>>> dayTimePrice = new LinkedHashMap<>();
         GolfNowLoader.getCourseId().keySet().forEach(course -> {
             try {
-               Map<String, String> dayHtml = GolfNowLoader.getHtml30daysDealsCourse(course, startDate);
+                Map<String, String> dayHtml = GolfNowLoader.getHtml30daysDealsCourse(course, startDate);
                 dayHtml.forEach((key, value) -> {
                     Map<String, String> timePrice = getHotDealsTimePrice(value, course);
                     dayTimePrice.computeIfAbsent(key, f -> new ArrayList<>()).add(timePrice);
@@ -42,7 +39,14 @@ public class GolfNowParser {
 
     }
 
+    public static String formatDayTimePriceList(Map<String, List<Map<String, String>>> parsed30dayDealsCourses) {
+        StringBuilder strOut = new StringBuilder();
+        parsed30dayDealsCourses.forEach((key, value) -> {
+            strOut.append(key);
+            strOut.append(value + "\n");
+        });
 
-
+        return strOut.toString();
+    }
 
 }
