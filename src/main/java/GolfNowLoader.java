@@ -1,6 +1,5 @@
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -31,19 +30,18 @@ public class GolfNowLoader {
     return htmlStr;
   }
 
-  public static Map<String, String> getHtml30daysDealsCourse(String course, String fromDate) throws InterruptedException {
-    LocalDate startDate = LocalDate.parse(fromDate);
+  public static Map<String, String> getHtmlDaysDealsCourse(String course, LocalDate fromDate, int daysOut) throws InterruptedException {
     Map<String, String> dayHtml = new LinkedHashMap<>();
-    String dayUrl = buildCourseDayUrl(course, startDate.format(DateTimeFormatter.ofPattern("MMM+d+uuuu")));
+    String dayUrl = buildCourseDayUrl(course, fromDate.format(DateTimeFormatter.ofPattern("MMM+d+uuuu")));
     driver.get(dayUrl);
     List<WebElement> buttonToClick = driver.findElements(By.id("onetrust-accept-btn-handler"));
     if (!buttonToClick.isEmpty()) {
       buttonToClick.get(0).click();
     }
     Thread.sleep(7000);
-    for (int i = 0; i <= 30; i++) {
+    for (int i = 0; i <= daysOut; i++) {
       Thread.sleep(2000);
-      dayHtml.put(startDate.plusDays(i).toString(), driver.getPageSource());
+      dayHtml.put(fromDate.plusDays(i).toString(), driver.getPageSource());
       WebElement nextDayButton = driver.findElement(By.cssSelector("#nextDay div"));
       nextDayButton.click();
     }

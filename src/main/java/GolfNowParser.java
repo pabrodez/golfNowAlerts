@@ -3,6 +3,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class GolfNowParser {
@@ -21,11 +22,11 @@ public class GolfNowParser {
         return timePrice;
     }
 
-    public static Map<String, List<Map<String, String>>> parseAllCourses30dayDeals(String startDate) {
+    public static Map<String, List<Map<String, String>>> parseAllCoursesDaysDeals (LocalDate fromDate, int daysOut) {
         Map<String, List<Map<String, String>>> dayTimePrice = new LinkedHashMap<>();
         GolfNowLoader.getCourseId().keySet().forEach(course -> {
             try {
-                Map<String, String> dayHtml = GolfNowLoader.getHtml30daysDealsCourse(course, startDate);
+                Map<String, String> dayHtml = GolfNowLoader.getHtmlDaysDealsCourse(course, fromDate, daysOut);
                 dayHtml.forEach((key, value) -> {
                     Map<String, String> timePrice = getHotDealsTimePrice(value, course);
                     dayTimePrice.computeIfAbsent(key, f -> new ArrayList<>()).add(timePrice);
@@ -43,7 +44,8 @@ public class GolfNowParser {
         StringBuilder strOut = new StringBuilder();
         parsed30dayDealsCourses.forEach((key, value) -> {
             strOut.append(key);
-            strOut.append(value + "\n");
+            strOut.append(value);
+            strOut.append("\n");
         });
 
         return strOut.toString();
